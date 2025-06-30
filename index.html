@@ -778,15 +778,15 @@
                         displayName = 'Jetpack Compose';
                         break;
                     case 'flutter':
-                        query = 'topic:flutter OR language:dart flutter stars:>50';
+                        query = 'topic:flutter OR language:dart flutter stars:>20';
                         displayName = 'Flutter';
                         break;
                     case 'react-native':
-                        query = 'topic:react-native OR "react native" stars:>50';
+                        query = 'topic:react-native OR "react native" stars:>20';
                         displayName = 'React Native';
                         break;
                     default:
-                        query = `topic:${topic} stars:>50`;
+                        query = `topic:${topic} stars:>20`;
                         displayName = topic.charAt(0).toUpperCase() + topic.slice(1);
                 }
                 
