@@ -1,9 +1,5 @@
 const { Anthropic } = require('@anthropic-ai/sdk');
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 exports.handler = async (event, context) => {
   // CORS headers
   const headers = {
@@ -27,7 +23,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { message, context: userContext } = JSON.parse(event.body);
+    const { message, context: userContext, apiKey } = JSON.parse(event.body);
 
     if (!message) {
       return {
@@ -36,6 +32,19 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ error: 'Message required' })
       };
     }
+
+    if (!apiKey) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'API key required' })
+      };
+    }
+
+    // Inizializza Anthropic con la chiave ricevuta dal frontend
+    const anthropic = new Anthropic({
+      apiKey: apiKey,  // ← Ora prende la chiave dalla richiesta
+    });
 
     // Chiamata a Claude mascherata
     const response = await anthropic.messages.create({
@@ -60,6 +69,18 @@ Domanda: ${message}`
 
   } catch (error) {
     console.error('DevAssistant Error:', error);
+    
+    // Gestione errori specifici per API key invalida
+    if (error.status === 401) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({
+          error: 'Invalid API key',
+          message: 'La tua API key non è valida o è scaduta'
+        })
+      };
+    }
     
     return {
       statusCode: 500,

@@ -317,6 +317,26 @@
                 <h2>🤖 DevAssistant AI</h2>
                 <p>Il tuo assistente intelligente per domande di programmazione, debugging e consigli tecnici.</p>
                 
+                <!-- Configurazione API Key -->
+                <div style="margin: 15px 0; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;">
+                    <h4 style="margin-bottom: 10px; color: #856404;">🔑 Configurazione API</h4>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                        <input type="password" id="api-key-input" placeholder="Inserisci la tua API key..." 
+                               style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                        <button class="btn" onclick="saveApiKey()" style="padding: 8px 16px;">
+                            💾 Salva
+                        </button>
+                        <button class="btn" onclick="resetApiKey()" style="padding: 8px 16px; background: #6c757d;">
+                            🔄 Reset
+                        </button>
+                        <span id="api-status" style="font-size: 0.9rem;"></span>
+                    </div>
+                    <small style="color: #856404;">
+                        ⚠️ <strong>Sicurezza:</strong> La chiave viene memorizzata solo temporaneamente durante la sessione del browser.
+                        Non condividere mai la tua API key con altri.
+                    </small>
+                </div>
+                
                 <div style="margin: 15px 0;">
                     <textarea id="ai-input" placeholder="Scrivi la tua domanda di programmazione, errore da debuggare, o richiedi consigli tecnici..." 
                               style="width: 100%; min-height: 100px; padding: 15px; border-radius: 8px; border: 1px solid #ddd; resize: vertical; font-family: inherit;"></textarea>
@@ -392,6 +412,9 @@
             }
         };
 
+        // Variabile globale per memorizzare l'API key temporaneamente
+        let currentApiKey = null;
+
         // Utility per gestire il loading
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
@@ -419,6 +442,44 @@
             window.open(url, '_blank');
         }
 
+        // Funzioni per gestire l'API Key
+        function saveApiKey() {
+            const input = document.getElementById('api-key-input');
+            const status = document.getElementById('api-status');
+            const apiKey = input.value.trim();
+            
+            if (!apiKey) {
+                status.innerHTML = '❌ <span style="color: #dc3545;">Inserisci una API key valida</span>';
+                return;
+            }
+            
+            if (!apiKey.startsWith('sk-ant-')) {
+                status.innerHTML = '⚠️ <span style="color: #fd7e14;">Formato API key sospetto</span>';
+                return;
+            }
+            
+            currentApiKey = apiKey;
+            status.innerHTML = '✅ <span style="color: #28a745;">API key salvata</span>';
+            
+            // Nascondi la chiave per sicurezza
+            input.value = '*'.repeat(20);
+            input.disabled = true;
+            
+            setTimeout(() => {
+                status.innerHTML = '';
+            }, 3000);
+        }
+
+        function resetApiKey() {
+            currentApiKey = null;
+            const input = document.getElementById('api-key-input');
+            const status = document.getElementById('api-status');
+            
+            input.value = '';
+            input.disabled = false;
+            status.innerHTML = '';
+        }
+
         // Funzioni per DevAssistant AI
         async function askDevAssistant() {
             const input = document.getElementById('ai-input');
@@ -426,6 +487,12 @@
             
             if (!question) {
                 alert('Per favore, inserisci una domanda!');
+                return;
+            }
+
+            if (!currentApiKey) {
+                alert('Per favore, inserisci e salva la tua API key prima di fare domande!');
+                document.getElementById('api-key-input').focus();
                 return;
             }
 
@@ -460,7 +527,8 @@
                 headers: API_CONFIG.devAssistant.headers,
                 body: JSON.stringify({
                     message: question,
-                    context: 'development_assistant'
+                    context: 'development_assistant',
+                    apiKey: currentApiKey  // ← Inviamo l'API key nella richiesta
                 })
             });
 
@@ -525,6 +593,7 @@
         function clearAIChat() {
             document.getElementById('ai-results').innerHTML = '';
             document.getElementById('ai-input').value = '';
+            // L'API key rimane salvata anche dopo aver pulito la chat
         }
 
         // Funzione per fetchare repository trending
