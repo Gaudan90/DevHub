@@ -377,6 +377,22 @@
                 <button class="btn" onclick="fetchReposByLanguage('typescript')" id="ts-btn">
                     💙 TypeScript
                 </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('android')" id="android-btn">
+                    🤖 Android
+                </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('flutter')" id="flutter-btn">
+                    💙 Flutter
+                </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('react-native')" id="rn-btn">
+                    📱 React Native
+                </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('swift')" id="swift-btn">
+                    🍎 Swift
+                </button>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
@@ -560,6 +576,24 @@
                 }
 
                 const data = await response.json();
+                
+                // Gestione errore crediti insufficienti
+                if (data.error === 'Insufficient credits') {
+                    displayAIError(`
+                        <strong>💳 Crediti API Esauriti!</strong><br><br>
+                        Il tuo account Anthropic ha bisogno di più crediti per usare l'API.<br><br>
+                        <strong>Come risolvere:</strong><br>
+                        1. Vai su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
+                        2. Clicca su <strong>Plans & Billing</strong><br>
+                        3. Aggiungi crediti al tuo account<br><br>
+                        <strong>Usa la modalità demo nel frattempo!</strong>
+                    `);
+                    
+                    // Fallback alla simulazione
+                    await simulateAIResponse(question);
+                    return;
+                }
+                
                 displayAIResponse(data.response || data.answer || 'Risposta ricevuta');
                 
             } catch (error) {
@@ -690,7 +724,44 @@
             showLoading();
             
             try {
-                const query = `language:${language} stars:>50 created:>2023-01-01`;
+                let query = '';
+                let displayName = '';
+                
+                // Configurazione query specifiche per ogni linguaggio/framework
+                switch(language) {
+                    case 'javascript':
+                        query = `language:javascript stars:>50 created:>2023-01-01`;
+                        displayName = 'JAVASCRIPT';
+                        break;
+                    case 'python':
+                        query = `language:python stars:>50 created:>2023-01-01`;
+                        displayName = 'PYTHON';
+                        break;
+                    case 'typescript':
+                        query = `language:typescript stars:>50 created:>2023-01-01`;
+                        displayName = 'TYPESCRIPT';
+                        break;
+                    case 'android':
+                        query = `(language:kotlin android OR language:java android) stars:>30 created:>2023-01-01`;
+                        displayName = 'ANDROID';
+                        break;
+                    case 'flutter':
+                        query = `flutter language:dart stars:>30 created:>2023-01-01`;
+                        displayName = 'FLUTTER';
+                        break;
+                    case 'react-native':
+                        query = `react-native (language:javascript OR language:typescript) stars:>30 created:>2023-01-01`;
+                        displayName = 'REACT NATIVE';
+                        break;
+                    case 'swift':
+                        query = `language:swift stars:>30 created:>2023-01-01`;
+                        displayName = 'SWIFT';
+                        break;
+                    default:
+                        query = `language:${language} stars:>50 created:>2023-01-01`;
+                        displayName = language.toUpperCase();
+                }
+                
                 const url = `${API_CONFIG.github.baseUrl}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=5`;
                 
                 const response = await fetch(url, {
@@ -702,7 +773,7 @@
                 }
 
                 const data = await response.json();
-                displayRepositories(data.items, `Repository ${language.toUpperCase()} più Popolari`);
+                displayRepositories(data.items, `Repository ${displayName} più Popolari`);
                 
             } catch (error) {
                 console.error('Errore nel fetch dei repository:', error);
