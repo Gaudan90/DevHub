@@ -470,17 +470,17 @@
             const apiKey = input.value.trim();
             
             if (!apiKey) {
-                status.innerHTML = '❌ <span style="color: #dc3545;">Inserisci una API key valida</span>';
+                status.innerHTML = '❌ <span style="color: #dc3545;">Inserisci una chiave valida</span>';
                 return;
             }
             
             if (!apiKey.startsWith('sk-ant-')) {
-                status.innerHTML = '⚠️ <span style="color: #fd7e14;">Formato API key sospetto</span>';
+                status.innerHTML = '⚠️ <span style="color: #fd7e14;">Formato chiave sospetto</span>';
                 return;
             }
             
             currentApiKey = apiKey;
-            status.innerHTML = '✅ <span style="color: #28a745;">API key salvata</span>';
+            status.innerHTML = '✅ <span style="color: #28a745;">Chiave salvata</span>';
             
             // Nascondi la chiave per sicurezza
             input.value = '*'.repeat(20);
@@ -512,7 +512,7 @@
             }
 
             if (!currentApiKey) {
-                alert('Per favore, inserisci e salva la tua API key prima di fare domande!');
+                alert('Per favore, inserisci e salva la tua chiave admin prima di fare domande!');
                 document.getElementById('api-key-input').focus();
                 return;
             }
