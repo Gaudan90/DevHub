@@ -522,22 +522,83 @@
         }
 
         async function callDevAssistantAPI(question) {
-            const response = await fetch(API_CONFIG.devAssistant.endpoint, {
-                method: 'POST',
-                headers: API_CONFIG.devAssistant.headers,
-                body: JSON.stringify({
-                    message: question,
-                    context: 'development_assistant',
-                    apiKey: currentApiKey  // ← Inviamo l'API key nella richiesta
-                })
-            });
+            try {
+                const response = await fetch(API_CONFIG.devAssistant.endpoint, {
+                    method: 'POST',
+                    headers: API_CONFIG.devAssistant.headers,
+                    body: JSON.stringify({
+                        message: question,
+                        context: 'development_assistant',
+                        apiKey: currentApiKey  // ← Inviamo l'API key nella richiesta
+                    })
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // Controlla se la risposta è OK
+                if (!response.ok) {
+                    // Prova a leggere il contenuto per capire l'errore
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                    } else {
+                        // Probabilmente è una pagina HTML 404
+                        const textResponse = await response.text();
+                        
+                        if (response.status === 404) {
+                            throw new Error('FUNCTION_NOT_FOUND');
+                        } else {
+                            throw new Error(`Server Error ${response.status}: La funzione Netlify potrebbe non essere configurata correttamente`);
+                        }
+                    }
+                }
+
+                // Controlla se la risposta è JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('INVALID_RESPONSE');
+                }
+
+                const data = await response.json();
+                displayAIResponse(data.response || data.answer || 'Risposta ricevuta');
+                
+            } catch (error) {
+                console.error('API Error Details:', error);
+                
+                if (error.message === 'FUNCTION_NOT_FOUND') {
+                    displayAIError(`
+                        <strong>🚨 Netlify Function non trovata!</strong><br><br>
+                        Sembra che la function <code>dev-assistant</code> non sia ancora stata creata o deployata.<br><br>
+                        <strong>Passi da seguire:</strong><br>
+                        1. Apri il terminale nella cartella del progetto<br>
+                        2. Esegui: <code>netlify functions:create dev-assistant</code><br>
+                        3. Copia il codice della function che ti ho fornito<br>
+                        4. Esegui: <code>npm install @anthropic-ai/sdk</code><br>
+                        5. Fai commit e push per deployare<br><br>
+                        <strong>Per ora prova la modalità demo!</strong>
+                    `);
+                    
+                    // Fallback alla simulazione
+                    await simulateAIResponse(question);
+                    return;
+                }
+                
+                if (error.message === 'INVALID_RESPONSE') {
+                    displayAIError(`
+                        <strong>🔧 Risposta non valida dal server</strong><br><br>
+                        La Netlify Function sta restituendo HTML invece di JSON.<br>
+                        Verifica che la function sia configurata correttamente.<br><br>
+                        <strong>Uso la modalità demo per ora...</strong>
+                    `);
+                    
+                    // Fallback alla simulazione
+                    await simulateAIResponse(question);
+                    return;
+                }
+                
+                // Altri errori generici
+                throw error;
             }
-
-            const data = await response.json();
-            displayAIResponse(data.response || data.answer || 'Risposta ricevuta');
         }
 
         async function simulateAIResponse(question) {

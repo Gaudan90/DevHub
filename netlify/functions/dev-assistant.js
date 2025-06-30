@@ -41,12 +41,12 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Inizializza Anthropic con la chiave ricevuta dal frontend
+    // Inizializza Anthropic con la chiave ricevuta
     const anthropic = new Anthropic({
-      apiKey: apiKey,  // ← Ora prende la chiave dalla richiesta
+      apiKey: apiKey,
     });
 
-    // Chiamata a Claude mascherata
+    // Chiamata mascherata a Claude
     const response = await anthropic.messages.create({
       model: 'claude-opus-4-20250514',
       max_tokens: 1024,
@@ -70,7 +70,6 @@ Domanda: ${message}`
   } catch (error) {
     console.error('DevAssistant Error:', error);
     
-    // Gestione errori specifici per API key invalida
     if (error.status === 401) {
       return {
         statusCode: 401,
