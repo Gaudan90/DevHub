@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub - Il tuo Hub per lo Sviluppo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .api-section {
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .repo-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .repo-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .repo-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .repo-name {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .repo-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .repo-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #495057;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .developer-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .ai-response {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .ai-response::before {
+            content: "🤖";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #e7f3ff;
+            padding: 0 5px;
+            font-size: 1.2rem;
+        }
+
+        .ai-question {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 0 8px 8px 0;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .ai-question::before {
+            content: "👤 Tu: ";
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        #ai-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 DevHub</h1>
+            <p class="subtitle">Il tuo hub completo per lo sviluppo web e le risorse per sviluppatori</p>
+        </header>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>🛠️ Strumenti per Sviluppatori</h2>
+                <p>Accesso rapido agli strumenti più utilizzati nel desenvolvimento web.</p>
+                
+                <div class="developer-tools">
+                    <div class="tool-card" onclick="openTool('https://github.com')">
+                        <div class="tool-icon">📱</div>
+                        <h4>GitHub</h4>
+                    </div>
+                    <div class="tool-card" onclick="openTool('https://codepen.io')">
+                        <div class="tool-icon">✏️</div>
+                        <h4>CodePen</h4>
+                    </div>
+                    <div class="tool-card" onclick="openTool('https://stackoverflow.com')">
+                        <div class="tool-icon">❓</div>
+                        <h4>Stack Overflow</h4>
+                    </div>
+                    <div class="tool-card" onclick="openTool('https://developer.mozilla.org')">
+                        <div class="tool-icon">📚</div>
+                        <h4>MDN Docs</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Statistiche in Tempo Reale</h2>
+                <p>Monitora le tendenze e le statistiche del mondo dello sviluppo.</p>
+                
+                <button class="btn" onclick="fetchDevStats()">
+                    📈 Carica Statistiche
+                </button>
+                
+                <div id="dev-stats">
+                    <p>Clicca per caricare le statistiche più recenti!</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🤖 DevAssistant AI</h2>
+                <p>Il tuo assistente intelligente per domande di programmazione, debugging e consigli tecnici.</p>
+                
+                <div style="margin: 15px 0;">
+                    <textarea id="ai-input" placeholder="Scrivi la tua domanda di programmazione, errore da debuggare, o richiedi consigli tecnici..." 
+                              style="width: 100%; min-height: 100px; padding: 15px; border-radius: 8px; border: 1px solid #ddd; resize: vertical; font-family: inherit;"></textarea>
+                </div>
+                
+                <button class="btn" onclick="askDevAssistant()" id="ai-btn">
+                    🚀 Chiedi al DevAssistant
+                </button>
+                
+                <button class="btn" onclick="clearAIChat()" style="background: #6c757d;">
+                    🗑️ Pulisci Chat
+                </button>
+
+                <div class="loading" id="ai-loading">
+                    <div class="spinner"></div>
+                    L'AI sta pensando...
+                </div>
+
+                <div id="ai-results"></div>
+            </div>
+
+            <div class="card api-section">
+                <h2>🔥 Repository Trending GitHub</h2>
+                <p>Scopri i repository più popolari e trending su GitHub nella community degli sviluppatori.</p>
+                
+                <button class="btn" onclick="fetchTrendingRepos()" id="fetch-btn">
+                    🔍 Carica Repository Trending
+                </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('javascript')" id="js-btn">
+                    💛 JavaScript
+                </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('python')" id="python-btn">
+                    🐍 Python
+                </button>
+                
+                <button class="btn" onclick="fetchReposByLanguage('typescript')" id="ts-btn">
+                    💙 TypeScript
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    Caricamento in corso...
+                </div>
+
+                <div id="api-results"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🌟 DevHub - Realizzato con passione per la community degli sviluppatori</p>
+            <p>💡 <strong>DevAssistant AI:</strong> Usa Ctrl+Enter per inviare rapidamente le domande</p>
+            <p>🚀 Pronto per l'integrazione con Netlify Functions!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Configurazione API
+        const API_CONFIG = {
+            github: {
+                baseUrl: 'https://api.github.com',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            },
+            devAssistant: {
+                // Quando deploy su Netlify, sostituire con: '/.netlify/functions/dev-assistant'
+                endpoint: '/.netlify/functions/dev-assistant',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        };
+
+        // Utility per gestire il loading
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('fetch-btn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('fetch-btn').disabled = false;
+        }
+
+        // Utility per gestire il loading AI
+        function showAILoading() {
+            document.getElementById('ai-loading').style.display = 'block';
+            document.getElementById('ai-btn').disabled = true;
+        }
+
+        function hideAILoading() {
+            document.getElementById('ai-loading').style.display = 'none';
+            document.getElementById('ai-btn').disabled = false;
+        }
+
+        // Funzione per aprire strumenti esterni
+        function openTool(url) {
+            window.open(url, '_blank');
+        }
+
+        // Funzioni per DevAssistant AI
+        async function askDevAssistant() {
+            const input = document.getElementById('ai-input');
+            const question = input.value.trim();
+            
+            if (!question) {
+                alert('Per favore, inserisci una domanda!');
+                return;
+            }
+
+            showAILoading();
+            
+            try {
+                // Mostra la domanda dell'utente
+                displayAIQuestion(question);
+                
+                // In ambiente di sviluppo, simula una risposta
+                if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+                    await simulateAIResponse(question);
+                } else {
+                    // In produzione, chiama la Netlify Function
+                    await callDevAssistantAPI(question);
+                }
+                
+                // Pulisci l'input
+                input.value = '';
+                
+            } catch (error) {
+                console.error('Errore DevAssistant:', error);
+                displayAIError('Errore nel contattare il DevAssistant. Riprova più tardi.');
+            } finally {
+                hideAILoading();
+            }
+        }
+
+        async function callDevAssistantAPI(question) {
+            const response = await fetch(API_CONFIG.devAssistant.endpoint, {
+                method: 'POST',
+                headers: API_CONFIG.devAssistant.headers,
+                body: JSON.stringify({
+                    message: question,
+                    context: 'development_assistant'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            displayAIResponse(data.response || data.answer || 'Risposta ricevuta');
+        }
+
+        async function simulateAIResponse(question) {
+            // Simula il delay di una chiamata API reale
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Risposte simulate basate su parole chiave
+            let response = '';
+            const lowerQuestion = question.toLowerCase();
+            
+            if (lowerQuestion.includes('javascript') || lowerQuestion.includes('js')) {
+                response = `Per JavaScript, ti consiglio di:\n\n• Utilizzare ES6+ features come arrow functions e destructuring\n• Implementare proper error handling con try/catch\n• Considerare l'uso di TypeScript per progetti più grandi\n• Usare strumenti come ESLint per mantenere code quality\n\nHai bisogno di aiuto con qualche funzionalità specifica?`;
+            } else if (lowerQuestion.includes('react') || lowerQuestion.includes('vue') || lowerQuestion.includes('angular')) {
+                response = `Per i framework frontend moderni:\n\n• React: Ottimo per applicazioni complesse, grande ecosistema\n• Vue: Più semplice da imparare, ottima documentazione\n• Angular: Perfetto per applicazioni enterprise\n\nTutti e tre supportano TypeScript e hanno ottimi tool di sviluppo. Quale stai considerando?`;
+            } else if (lowerQuestion.includes('css') || lowerQuestion.includes('styling')) {
+                response = `Per il CSS moderno ti suggerisco:\n\n• CSS Grid e Flexbox per layout responsive\n• Custom Properties (CSS Variables) per temi dinamici\n• PostCSS o Sass per features avanzate\n• Tailwind CSS per utility-first approach\n\nVuoi che ti mostri un esempio specifico?`;
+            } else if (lowerQuestion.includes('api') || lowerQuestion.includes('fetch')) {
+                response = `Per le chiamate API:\n\n• Usa async/await invece di .then() chains\n• Implementa proper error handling\n• Considera l'uso di axios per features avanzate\n• Aggiungi loading states e timeout\n• Usa environment variables per API keys\n\nNeed help with a specific API integration?`;
+            } else {
+                response = `Interessante domanda! Come sviluppatore esperto, ti suggerisco di:\n\n• Analizzare il problema step by step\n• Consultare la documentazione ufficiale\n• Cercare esempi su GitHub\n• Testare in un ambiente isolato\n\nPuoi condividere più dettagli così posso aiutarti meglio?`;
+            }
+            
+            displayAIResponse(response);
+        }
+
+        function displayAIQuestion(question) {
+            const resultsContainer = document.getElementById('ai-results');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'ai-question';
+            questionDiv.textContent = question;
+            resultsContainer.appendChild(questionDiv);
+            questionDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayAIResponse(response) {
+            const resultsContainer = document.getElementById('ai-results');
+            const responseDiv = document.createElement('div');
+            responseDiv.className = 'ai-response';
+            responseDiv.innerHTML = response.replace(/\n/g, '<br>');
+            resultsContainer.appendChild(responseDiv);
+            responseDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayAIError(message) {
+            const resultsContainer = document.getElementById('ai-results');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `<strong>⚠️ Errore DevAssistant:</strong> ${message}`;
+            resultsContainer.appendChild(errorDiv);
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function clearAIChat() {
+            document.getElementById('ai-results').innerHTML = '';
+            document.getElementById('ai-input').value = '';
+        }
+
+        // Funzione per fetchare repository trending
+        async function fetchTrendingRepos() {
+            showLoading();
+            
+            try {
+                // Cerca repository popolari dell'ultima settimana
+                const query = 'created:>2024-01-01 stars:>100';
+                const url = `${API_CONFIG.github.baseUrl}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=6`;
+                
+                const response = await fetch(url, {
+                    headers: API_CONFIG.github.headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayRepositories(data.items, 'Repository Trending più Popolari');
+                
+            } catch (error) {
+                console.error('Errore nel fetch dei repository:', error);
+                displayError('Errore nel caricamento dei repository. Riprova più tardi.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Funzione per fetchare repository per linguaggio
+        async function fetchReposByLanguage(language) {
+            showLoading();
+            
+            try {
+                const query = `language:${language} stars:>50 created:>2023-01-01`;
+                const url = `${API_CONFIG.github.baseUrl}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=5`;
+                
+                const response = await fetch(url, {
+                    headers: API_CONFIG.github.headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayRepositories(data.items, `Repository ${language.toUpperCase()} più Popolari`);
+                
+            } catch (error) {
+                console.error('Errore nel fetch dei repository:', error);
+                displayError('Errore nel caricamento dei repository. Riprova più tardi.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Funzione per fetchare statistiche di sviluppo
+        async function fetchDevStats() {
+            const statsContainer = document.getElementById('dev-stats');
+            statsContainer.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div> Caricamento...';
+            
+            try {
+                // Simula chiamata API per statistiche (sostituire con la tua Netlify Function)
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Simula delay
+                
+                const stats = {
+                    totalUsers: Math.floor(Math.random() * 10000) + 50000,
+                    activeProjects: Math.floor(Math.random() * 1000) + 2000,
+                    codeCommits: Math.floor(Math.random() * 50000) + 100000,
+                    deployments: Math.floor(Math.random() * 500) + 1000
+                };
+
+                statsContainer.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div class="tool-card">
+                            <div class="tool-icon">👥</div>
+                            <h4>${stats.totalUsers.toLocaleString()}</h4>
+                            <p>Sviluppatori Attivi</p>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">📁</div>
+                            <h4>${stats.activeProjects.toLocaleString()}</h4>
+                            <p>Progetti Attivi</p>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">💻</div>
+                            <h4>${stats.codeCommits.toLocaleString()}</h4>
+                            <p>Commit Oggi</p>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">🚀</div>
+                            <h4>${stats.deployments.toLocaleString()}</h4>
+                            <p>Deploy Riusciti</p>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                statsContainer.innerHTML = `
+                    <div class="error">
+                        Errore nel caricamento delle statistiche: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Funzione per mostrare i repository
+        function displayRepositories(repos, title) {
+            const resultsContainer = document.getElementById('api-results');
+            
+            if (!repos || repos.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="error">
+                        Nessun repository trovato. Riprova più tardi.
+                    </div>
+                `;
+                return;
+            }
+
+            const repoHTML = repos.map(repo => `
+                <div class="repo-item">
+                    <div class="repo-name">
+                        <a href="${repo.html_url}" target="_blank" style="text-decoration: none; color: #667eea;">
+                            ${repo.full_name}
+                        </a>
+                    </div>
+                    <div class="repo-description">
+                        ${repo.description || 'Nessuna descrizione disponibile'}
+                    </div>
+                    <div class="repo-stats">
+                        <span class="stat">
+                            ⭐ ${repo.stargazers_count.toLocaleString()} stars
+                        </span>
+                        <span class="stat">
+                            🍴 ${repo.forks_count.toLocaleString()} forks
+                        </span>
+                        <span class="stat">
+                            📝 ${repo.language || 'N/A'}
+                        </span>
+                        <span class="stat">
+                            📅 ${new Date(repo.created_at).toLocaleDateString('it-IT')}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsContainer.innerHTML = `
+                <h3 style="margin: 20px 0 15px 0; color: #4a5568;">${title}</h3>
+                <div class="repo-list">
+                    ${repoHTML}
+                </div>
+            `;
+        }
+
+        // Funzione per mostrare errori
+        function displayError(message) {
+            const resultsContainer = document.getElementById('api-results');
+            resultsContainer.innerHTML = `
+                <div class="error">
+                    <strong>⚠️ Errore:</strong> ${message}
+                </div>
+            `;
+        }
+
+        // Carica repository trending all'avvio
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DevHub caricato con successo!');
+            console.log('📡 Pronto per l\'integrazione con Netlify Functions');
+            
+            // Event listener per il textarea AI (invio con Enter)
+            document.getElementById('ai-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    askDevAssistant();
+                }
+            });
+            
+            // Carica automaticamente alcuni repository al caricamento della pagina
+            setTimeout(() => {
+                fetchTrendingRepos();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
