@@ -204,7 +204,7 @@
             border: 1px solid #f5c6cb;
         }
 
-        .ai-response {
+        .dev-response {
             background: #e7f3ff;
             border: 1px solid #b8daff;
             border-radius: 8px;
@@ -213,7 +213,7 @@
             position: relative;
         }
 
-        .ai-response::before {
+        .dev-response::before {
             content: "🤖";
             position: absolute;
             top: -10px;
@@ -223,7 +223,7 @@
             font-size: 1.2rem;
         }
 
-        .ai-question {
+        .dev-question {
             background: #f8f9fa;
             border-left: 4px solid #667eea;
             border-radius: 0 8px 8px 0;
@@ -232,13 +232,13 @@
             font-style: italic;
         }
 
-        .ai-question::before {
+        .dev-question::before {
             content: "👤 Tu: ";
             font-weight: bold;
             color: #667eea;
         }
 
-        #ai-input:focus {
+        #dev-input:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
@@ -318,7 +318,7 @@
                 <h2>🤖 DevAssistant</h2>
                 <p>Il tuo assistente per domande di programmazione, debugging e consigli tecnici.</p>
                 
-                <!-- Configurazione API Key -->
+                <!-- Configurazione chiave admin -->
                 <div style="margin: 15px 0; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;">
                     <h4 style="margin-bottom: 10px; color: #856404;">🔑 Chiave admin</h4>
                     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
@@ -339,11 +339,11 @@
                 </div>
                 
                 <div style="margin: 15px 0;">
-                    <textarea id="ai-input" placeholder="Scrivi la tua domanda di programmazione, errore da debuggare, o richiedi consigli tecnici..." 
+                    <textarea id="dev-input" placeholder="Scrivimi pure, come ti posso aiutare?" 
                               style="width: 100%; min-height: 100px; padding: 15px; border-radius: 8px; border: 1px solid #ddd; resize: vertical; font-family: inherit;"></textarea>
                 </div>
                 
-                <button class="btn" onclick="askDevAssistant()" id="ai-btn">
+                <button class="btn" onclick="askDevAssistant()" id="dev-btn">
                     🚀 Chiedi al DevAssistant
                 </button>
                 
@@ -351,12 +351,12 @@
                     🗑️ Pulisci Chat
                 </button>
 
-                <div class="loading" id="ai-loading">
+                <div class="loading" id="dev-loading">
                     <div class="spinner"></div>
-                    L'AI sta pensando...
+                    Sto pensando...
                 </div>
 
-                <div id="ai-results"></div>
+                <div id="dev-results"></div>
             </div>
 
             <div class="card api-section">
@@ -416,7 +416,6 @@
     </div>
 
     <script>
-        // Configurazione API
         const API_CONFIG = {
             github: {
                 baseUrl: 'https://api.github.com',
@@ -433,7 +432,7 @@
             }
         };
 
-        // Variabile globale per memorizzare l'API key temporaneamente
+        // Variabile globale per memorizzare la chiave admin temporaneamente
         let currentApiKey = null;
 
         // Utility per gestire il loading
@@ -449,13 +448,13 @@
 
         // Utility per gestire il loading AI
         function showAILoading() {
-            document.getElementById('ai-loading').style.display = 'block';
-            document.getElementById('ai-btn').disabled = true;
+            document.getElementById('dev-loading').style.display = 'block';
+            document.getElementById('dev-btn').disabled = true;
         }
 
         function hideAILoading() {
-            document.getElementById('ai-loading').style.display = 'none';
-            document.getElementById('ai-btn').disabled = false;
+            document.getElementById('dev-loading').style.display = 'none';
+            document.getElementById('dev-btn').disabled = false;
         }
 
         // Funzione per aprire strumenti esterni
@@ -463,7 +462,7 @@
             window.open(url, '_blank');
         }
 
-        // Funzioni per gestire l'API Key
+        // Funzioni per gestire la chiave admin
         function saveApiKey() {
             const input = document.getElementById('api-key-input');
             const status = document.getElementById('api-status');
@@ -503,7 +502,7 @@
 
         // Funzioni per DevAssistant AI
         async function askDevAssistant() {
-            const input = document.getElementById('ai-input');
+            const input = document.getElementById('dev-input');
             const question = input.value.trim();
             
             if (!question) {
@@ -550,7 +549,7 @@
                     body: JSON.stringify({
                         message: question,
                         context: 'development_assistant',
-                        apiKey: currentApiKey  // ← Inviamo l'API key nella richiesta
+                        apiKey: currentApiKey  // ← Inviamo la chiave admin nella richiesta
                     })
                 });
 
@@ -585,13 +584,9 @@
                 // Gestione errore crediti insufficienti
                 if (data.error === 'Insufficient credits') {
                     displayAIError(`
-                        <strong>💳 Crediti API Esauriti!</strong><br><br>
-                        Il tuo account Anthropic ha bisogno di più crediti per usare l'API.<br><br>
-                        <strong>Come risolvere:</strong><br>
-                        1. Vai su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
-                        2. Clicca su <strong>Plans & Billing</strong><br>
-                        3. Aggiungi crediti al tuo account<br><br>
-                        <strong>Usa la modalità demo nel frattempo!</strong>
+                        <strong>Chiave Admin non più valida!</strong><br><br>
+                        L'admin ha bisogno di un'altra chiave, parla con l'amministratore.<br><br>
+                        <strong>Usa Github e StackOVerflow intanto!</strong>
                     `);
                     
                     // Fallback alla simulazione
@@ -602,19 +597,12 @@
                 displayAIResponse(data.response || data.answer || 'Risposta ricevuta');
                 
             } catch (error) {
-                console.error('API Error Details:', error);
+                console.error('Error Details:', error);
                 
                 if (error.message === 'FUNCTION_NOT_FOUND') {
                     displayAIError(`
                         <strong>🚨 Netlify Function non trovata!</strong><br><br>
                         Sembra che la function <code>dev-assistant</code> non sia ancora stata creata o deployata.<br><br>
-                        <strong>Passi da seguire:</strong><br>
-                        1. Apri il terminale nella cartella del progetto<br>
-                        2. Esegui: <code>netlify functions:create dev-assistant</code><br>
-                        3. Copia il codice della function che ti ho fornito<br>
-                        4. Esegui: <code>npm install @anthropic-ai/sdk</code><br>
-                        5. Fai commit e push per deployare<br><br>
-                        <strong>Per ora prova la modalità demo!</strong>
                     `);
                     
                     // Fallback alla simulazione
@@ -665,7 +653,7 @@
             } else if (lowerQuestion.includes('css') || lowerQuestion.includes('styling')) {
                 response = `Per il CSS moderno ti suggerisco:\n\n• CSS Grid e Flexbox per layout responsive\n• Custom Properties (CSS Variables) per temi dinamici\n• PostCSS o Sass per features avanzate\n• Tailwind CSS per utility-first approach\n\nVuoi che ti mostri un esempio specifico?`;
             } else if (lowerQuestion.includes('api') || lowerQuestion.includes('fetch')) {
-                response = `Per le chiamate API:\n\n• Usa async/await invece di .then() chains\n• Implementa proper error handling\n• Considera l'uso di axios per features avanzate\n• Aggiungi loading states e timeout\n• Usa environment variables per API keys\n\nNeed help with a specific API integration?`;
+                response = `Per le chiamate chiave admin:\n\n• Usa async/await invece di .then() chains\n• Implementa proper error handling\n• Considera l'uso di axios per features avanzate\n• Aggiungi loading states e timeout\n• Usa environment variables per Chiavi admin\n\nNeed help with a specific integration?`;
             } else {
                 response = `Interessante domanda! Come sviluppatore esperto, ti suggerisco di:\n\n• Analizzare il problema step by step\n• Consultare la documentazione ufficiale\n• Cercare esempi su GitHub\n• Testare in un ambiente isolato\n\nPuoi condividere più dettagli così posso aiutarti meglio?`;
             }
@@ -674,25 +662,25 @@
         }
 
         function displayAIQuestion(question) {
-            const resultsContainer = document.getElementById('ai-results');
+            const resultsContainer = document.getElementById('dev-results');
             const questionDiv = document.createElement('div');
-            questionDiv.className = 'ai-question';
+            questionDiv.className = 'dev-question';
             questionDiv.textContent = question;
             resultsContainer.appendChild(questionDiv);
             questionDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
         function displayAIResponse(response) {
-            const resultsContainer = document.getElementById('ai-results');
+            const resultsContainer = document.getElementById('dev-results');
             const responseDiv = document.createElement('div');
-            responseDiv.className = 'ai-response';
+            responseDiv.className = 'dev-response';
             responseDiv.innerHTML = response.replace(/\n/g, '<br>');
             resultsContainer.appendChild(responseDiv);
             responseDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
         function displayAIError(message) {
-            const resultsContainer = document.getElementById('ai-results');
+            const resultsContainer = document.getElementById('dev-results');
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error';
             errorDiv.innerHTML = `<strong>⚠️ Errore DevAssistant:</strong> ${message}`;
@@ -701,9 +689,9 @@
         }
 
         function clearAIChat() {
-            document.getElementById('ai-results').innerHTML = '';
-            document.getElementById('ai-input').value = '';
-            // L'API key rimane salvata anche dopo aver pulito la chat
+            document.getElementById('dev-results').innerHTML = '';
+            document.getElementById('dev-input').value = '';
+            // La chiave admin rimane salvata anche dopo aver pulito la chat
         }
 
         // Funzione per fetchare repository trending
@@ -817,7 +805,7 @@
             statsContainer.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div> Caricamento...';
             
             try {
-                // Simula chiamata API per statistiche (sostituire con la tua Netlify Function)
+                // Simula chiamata API per le statistiche
                 await new Promise(resolve => setTimeout(resolve, 1500)); // Simula delay
                 
                 const stats = {
@@ -924,8 +912,8 @@
             console.log('🚀 DevHub caricato con successo!');
             console.log('📡 Pronto per l\'integrazione con Netlify Functions');
             
-            // Event listener per il textarea AI (invio con Enter)
-            document.getElementById('ai-input').addEventListener('keydown', function(e) {
+            // Event listener per il textarea (invio con Enter)
+            document.getElementById('dev-input').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();
                     askDevAssistant();
