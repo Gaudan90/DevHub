@@ -83,12 +83,13 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 18px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
-            margin: 10px 5px;
+            margin: 5px;
+            white-space: nowrap;
         }
 
         .btn:hover {
@@ -314,14 +315,14 @@
             </div>
 
             <div class="card">
-                <h2>🤖 DevAssistant AI</h2>
-                <p>Il tuo assistente intelligente per domande di programmazione, debugging e consigli tecnici.</p>
+                <h2>🤖 DevAssistant</h2>
+                <p>Il tuo assistente per domande di programmazione, debugging e consigli tecnici.</p>
                 
                 <!-- Configurazione API Key -->
                 <div style="margin: 15px 0; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;">
-                    <h4 style="margin-bottom: 10px; color: #856404;">🔑 Configurazione API</h4>
+                    <h4 style="margin-bottom: 10px; color: #856404;">🔑 Chiave utente privilegiato</h4>
                     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-                        <input type="password" id="api-key-input" placeholder="Inserisci la tua API key..." 
+                        <input type="password" id="api-key-input" placeholder="Inserisci la tua chiave..." 
                                style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
                         <button class="btn" onclick="saveApiKey()" style="padding: 8px 16px;">
                             💾 Salva
@@ -332,8 +333,8 @@
                         <span id="api-status" style="font-size: 0.9rem;"></span>
                     </div>
                     <small style="color: #856404;">
-                        ⚠️ <strong>Sicurezza:</strong> La chiave viene memorizzata solo temporaneamente durante la sessione del browser.
-                        Non condividere mai la tua API key con altri.
+                        ⚠️ <strong>Attenzione:</strong> La chiave viene memorizzata solo temporaneamente.
+                        Non condividere mai la tua chiave con altri.
                     </small>
                 </div>
                 
@@ -366,33 +367,39 @@
                     🔍 Carica Repository Trending
                 </button>
                 
-                <button class="btn" onclick="fetchReposByLanguage('javascript')" id="js-btn">
-                    💛 JavaScript
-                </button>
-                
-                <button class="btn" onclick="fetchReposByLanguage('python')" id="python-btn">
-                    🐍 Python
-                </button>
-                
-                <button class="btn" onclick="fetchReposByLanguage('typescript')" id="ts-btn">
-                    💙 TypeScript
-                </button>
-                
-                <button class="btn" onclick="fetchReposByLanguage('android')" id="android-btn">
-                    🤖 Android
-                </button>
-                
-                <button class="btn" onclick="fetchReposByLanguage('flutter')" id="flutter-btn">
-                    💙 Flutter
-                </button>
-                
-                <button class="btn" onclick="fetchReposByLanguage('react-native')" id="rn-btn">
-                    📱 React Native
-                </button>
-                
-                <button class="btn" onclick="fetchReposByLanguage('swift')" id="swift-btn">
-                    🍎 Swift
-                </button>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0;">
+                    <button class="btn" onclick="fetchReposByLanguage('javascript')" id="js-btn">
+                        💛 JavaScript
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByLanguage('python')" id="python-btn">
+                        🐍 Python
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByLanguage('typescript')" id="ts-btn">
+                        💙 TypeScript
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByLanguage('kotlin')" id="kotlin-btn">
+                        🎯 Kotlin
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByTopic('jetpack-compose')" id="compose-btn">
+                        🚀 Jetpack Compose
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByTopic('flutter')" id="flutter-btn">
+                        🦋 Flutter
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByTopic('react-native')" id="rn-btn">
+                        📱 React Native
+                    </button>
+                    
+                    <button class="btn" onclick="fetchReposByLanguage('swift')" id="swift-btn">
+                        🍎 Swift
+                    </button>
+                </div>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
@@ -647,6 +654,16 @@
                 response = `Per JavaScript, ti consiglio di:\n\n• Utilizzare ES6+ features come arrow functions e destructuring\n• Implementare proper error handling con try/catch\n• Considerare l'uso di TypeScript per progetti più grandi\n• Usare strumenti come ESLint per mantenere code quality\n\nHai bisogno di aiuto con qualche funzionalità specifica?`;
             } else if (lowerQuestion.includes('react') || lowerQuestion.includes('vue') || lowerQuestion.includes('angular')) {
                 response = `Per i framework frontend moderni:\n\n• React: Ottimo per applicazioni complesse, grande ecosistema\n• Vue: Più semplice da imparare, ottima documentazione\n• Angular: Perfetto per applicazioni enterprise\n\nTutti e tre supportano TypeScript e hanno ottimi tool di sviluppo. Quale stai considerando?`;
+            } else if (lowerQuestion.includes('kotlin')) {
+                response = `Kotlin è fantastico! Ecco cosa ti consiglio:\n\n• Interoperabilità perfetta con Java\n• Sintassi più concisa e sicura\n• Ottimo per Android e backend\n• Jetpack Compose per UI moderne\n• Coroutines per programmazione asincrona\n\nStai sviluppando per Android o per altri progetti?`;
+            } else if (lowerQuestion.includes('flutter') || lowerQuestion.includes('dart')) {
+                response = `Flutter è una scelta eccellente per lo sviluppo cross-platform:\n\n• Un unico codebase per iOS e Android\n• Performance native con rendering personalizzato\n• Hot reload per sviluppo rapido\n• Widget system molto flessibile\n• Supporto per web e desktop\n\nVuoi iniziare con un progetto specifico?`;
+            } else if (lowerQuestion.includes('react native')) {
+                response = `React Native è ottimo per lo sviluppo mobile:\n\n• Usa React e JavaScript/TypeScript\n• Componenti nativi per performance migliori\n• Grande community e ecosistema\n• Expo per prototipazione rapida\n• Code sharing con web app React\n\nHai esperienza precedente con React?`;
+            } else if (lowerQuestion.includes('swift') || lowerQuestion.includes('ios')) {
+                response = `Swift per iOS development:\n\n• Linguaggio moderno e sicuro\n• SwiftUI per interfacce dichiarative\n• Xcode con ottimi debugging tools\n• Swift Package Manager per dependencies\n• Performance eccellente\n\nStai lavorando su un'app iOS specifica?`;
+            } else if (lowerQuestion.includes('jetpack compose')) {
+                response = `Jetpack Compose rivoluziona lo sviluppo Android UI:\n\n• UI dichiarativa come React/SwiftUI\n• Meno boilerplate code\n• Integrazione perfetta con Kotlin\n• State management semplificato\n• Preview in tempo reale\n\nStai migrando da View system tradizionale?`;
             } else if (lowerQuestion.includes('css') || lowerQuestion.includes('styling')) {
                 response = `Per il CSS moderno ti suggerisco:\n\n• CSS Grid e Flexbox per layout responsive\n• Custom Properties (CSS Variables) per temi dinamici\n• PostCSS o Sass per features avanzate\n• Tailwind CSS per utility-first approach\n\nVuoi che ti mostri un esempio specifico?`;
             } else if (lowerQuestion.includes('api') || lowerQuestion.includes('fetch')) {
@@ -724,43 +741,56 @@
             showLoading();
             
             try {
-                let query = '';
-                let displayName = '';
+                const query = `language:${language} stars:>50 created:>2023-01-01`;
+                const url = `${API_CONFIG.github.baseUrl}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=5`;
                 
-                // Configurazione query specifiche per ogni linguaggio/framework
-                switch(language) {
-                    case 'javascript':
-                        query = `language:javascript stars:>50 created:>2023-01-01`;
-                        displayName = 'JAVASCRIPT';
-                        break;
-                    case 'python':
-                        query = `language:python stars:>50 created:>2023-01-01`;
-                        displayName = 'PYTHON';
-                        break;
-                    case 'typescript':
-                        query = `language:typescript stars:>50 created:>2023-01-01`;
-                        displayName = 'TYPESCRIPT';
-                        break;
-                    case 'android':
-                        query = `(language:kotlin android OR language:java android) stars:>30 created:>2023-01-01`;
-                        displayName = 'ANDROID';
+                const response = await fetch(url, {
+                    headers: API_CONFIG.github.headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayRepositories(data.items, `Repository ${language.toUpperCase()} più Popolari`);
+                
+            } catch (error) {
+                console.error('Errore nel fetch dei repository:', error);
+                displayError('Errore nel caricamento dei repository. Riprova più tardi.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Funzione per fetchare repository per topic/framework
+        async function fetchReposByTopic(topic) {
+            showLoading();
+            
+            try {
+                let query;
+                let displayName;
+                
+                // Configura query specifiche per ogni topic
+                switch(topic) {
+                    case 'jetpack-compose':
+                        query = 'jetpack-compose OR "compose android" language:kotlin stars:>30';
+                        displayName = 'Jetpack Compose';
                         break;
                     case 'flutter':
-                        query = `flutter language:dart stars:>30 created:>2023-01-01`;
-                        displayName = 'FLUTTER';
+                        query = 'topic:flutter OR language:dart flutter stars:>50';
+                        displayName = 'Flutter';
                         break;
                     case 'react-native':
-                        query = `react-native (language:javascript OR language:typescript) stars:>30 created:>2023-01-01`;
-                        displayName = 'REACT NATIVE';
-                        break;
-                    case 'swift':
-                        query = `language:swift stars:>30 created:>2023-01-01`;
-                        displayName = 'SWIFT';
+                        query = 'topic:react-native OR "react native" stars:>50';
+                        displayName = 'React Native';
                         break;
                     default:
-                        query = `language:${language} stars:>50 created:>2023-01-01`;
-                        displayName = language.toUpperCase();
+                        query = `topic:${topic} stars:>50`;
+                        displayName = topic.charAt(0).toUpperCase() + topic.slice(1);
                 }
+                
+                query += ' created:>2023-01-01';
                 
                 const url = `${API_CONFIG.github.baseUrl}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=5`;
                 
