@@ -72,8 +72,8 @@ exports.handler = async (event, context) => {
 
     // Chiamata a Claude
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 512,
+      model: 'claude-opus-4-20250514',
+      max_tokens: 1024,
       messages: [{
         role: 'user',
         content: `Come sviluppatore senior esperto, rispondi in modo conciso e pratico alla seguente domanda di programmazione. Fornisci codice essenziale senza spiegazioni lunghe.
