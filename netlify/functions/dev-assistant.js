@@ -73,7 +73,7 @@ exports.handler = async (event, context) => {
     // Chiamata a Claude
     const response = await anthropic.messages.create({
       model: 'claude-opus-4-20250514',
-      max_tokens: 3072,
+      max_tokens: 2048,
       messages: [{
         role: 'user',
         content: `Come sviluppatore senior esperto, rispondi in italiano alla seguente domanda di programmazione. Fornisci codice preciso e rifletti attentamente.
