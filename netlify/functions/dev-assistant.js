@@ -76,7 +76,7 @@ exports.handler = async (event, context) => {
       max_tokens: 1024,
       messages: [{
         role: 'user',
-        content: `Come sviluppatore senior esperto, rispondi in modo conciso e pratico alla seguente domanda di programmazione. Fornisci codice essenziale senza spiegazioni lunghe.
+        content: `Come sviluppatore senior esperto, rispondi in italiano alla seguente domanda di programmazione. Fornisci codice preciso e rifletti attentamente.
 
 Domanda: ${message}`
       }]
